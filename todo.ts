@@ -1,38 +1,48 @@
 import {promises as fs} from 'fs' ;
 
+type Todo = {
+   id: number ;
+   title: string;
+   description: string;
+   status: 'completed' | 'in Progress'
+}
+
 interface ITodo {
-    listOfTodos : string[] ;
-    getTodos : () => string[];
-    createTodo:(todo:string) => void ;
-    updateTodo : (index:number,todo:string) => void ;
+    listOfTodos : Todo[] ;
+    getTodos : () => Todo[];
+    createTodo:(todo:Todo) => void ;
+    updateTodo : (index:number,todo:Todo) => void ;
     deleteTodo : (index:number) => void ;
     reset : () => void ;
 }
-class Todo implements ITodo {
-   public listOfTodos:string[] = [] ;
-   constructor(listOfTodos:string[]){
+class Todos implements ITodo {
+   public listOfTodos:Todo[] = [] ;
+   constructor(listOfTodos:Todo[]){
     this.listOfTodos = listOfTodos ;
     }
 
-    getTodos():string[]{
+    getTodos():Todo[]{
        return this.listOfTodos;
     }
-    createTodo(todo:string):void{
+    createTodo(todo:Todo):void{
        this.listOfTodos.push(todo)
     }
-    updateTodo(index:number,todo:string):void{
+    updateTodo(index:number,todo:Todo):void{
         this.listOfTodos.splice(index,1,todo)              
     }
     deleteTodo(index:number){
        this.listOfTodos.splice(index,1)
     }
-    reset(){
+    reset(){ 
         this.listOfTodos = [] ;
     }
 }
-const saveTodosInTextFile = async (todos:string[]) : Promise<void> => {
+const saveTodosInTextFile = async (todos:Todo[]) : Promise<void> => {
   try {
-    await fs.writeFile ('todos.txt',todos) 
+   const listOfTodos = todos.map((value)=>{
+        return(value.id,value.title,value.description,value.status)
+    })
+    await fs.writeFile ('todos.txt',listOfTodos) ;
   } catch (error) {
      console.error(error);
   }
@@ -41,17 +51,32 @@ const saveTodosInTextFile = async (todos:string[]) : Promise<void> => {
 
 
 
-const myTodos = new Todo(["learn React js","Learn Angular js","Learn Next js"]);
+const myTodos = new Todos([{
+   id:0,
+   title:'Learn Typescript',
+   description:'Learn typescript for better understanding',
+   status:'completed'
+
+},{
+   id:1,
+   title:'Learn React js',
+   description:'Learn React for front-end development',
+   status:'completed'
+}]);
 myTodos.getTodos();
 console.log(myTodos.getTodos());
-myTodos.createTodo("Learn vue js");
-console.log(myTodos.getTodos());
-myTodos.updateTodo(0,"learn Next js 14");
-console.log(myTodos.getTodos());
-myTodos.deleteTodo(0);
-console.log(myTodos.getTodos());
-myTodos.reset()
-console.log(myTodos.getTodos());
+myTodos.createTodo({
+   id: 2,
+   title: 'Learn Nextjs',
+   description: 'Learn Nextjs for server side rendering',
+   status: 'in Progress'
+});
+myTodos.updateTodo(0,{
+   id: 1,
+   title: 'Learn React',
+   description: 'Learn React for front-end development',
+   status: 'in Progress'
+});
 saveTodosInTextFile(myTodos.getTodos());
 
 

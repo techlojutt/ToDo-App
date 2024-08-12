@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = require("fs");
-class Todo {
+class Todos {
     constructor(listOfTodos) {
         this.listOfTodos = [];
         this.listOfTodos = listOfTodos;
@@ -33,21 +33,38 @@ class Todo {
 }
 const saveTodosInTextFile = (todos) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield fs_1.promises.writeFile('todos.txt', todos);
+        const resultTodo = todos.map((value) => {
+            return (value.id, value.title, value.description, value.status);
+        });
+        yield fs_1.promises.writeFile('todos.txt', resultTodo);
     }
     catch (error) {
         console.error(error);
     }
 });
-const myTodos = new Todo(["learn React js", "Learn Angular js", "Learn Next js"]);
+const myTodos = new Todos([{
+        id: 0,
+        title: 'Learn Typescript',
+        description: 'Learn typescript for better understanding',
+        status: 'completed'
+    }, {
+        id: 1,
+        title: 'Learn React js',
+        description: 'Learn React for front-end development',
+        status: 'completed'
+    }]);
 myTodos.getTodos();
 console.log(myTodos.getTodos());
-myTodos.createTodo("Learn vue js");
-console.log(myTodos.getTodos());
-myTodos.updateTodo(0, "learn Next js 14");
-console.log(myTodos.getTodos());
-myTodos.deleteTodo(0);
-console.log(myTodos.getTodos());
-myTodos.reset();
-console.log(myTodos.getTodos());
+myTodos.createTodo({
+    id: 2,
+    title: 'Learn Nextjs',
+    description: 'Learn Nextjs for server side rendering',
+    status: 'in Progress'
+});
+myTodos.updateTodo(0, {
+    id: 1,
+    title: 'Learn React',
+    description: 'Learn React for front-end development',
+    status: 'in Progress'
+});
 saveTodosInTextFile(myTodos.getTodos());
